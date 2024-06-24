@@ -1,4 +1,6 @@
-![image](https://github.com/friuns2/travelmaps/assets/16543239/99ac3dcf-f5b5-45d1-a9b0-eb169e710af0)
+
+
+https://github.com/friuns2/travelmaps/assets/16543239/3fc07810-ec7a-4c82-93c5-e9d5e8550002
 
 
 # Travel Creator
