@@ -1,3 +1,6 @@
+![image](https://github.com/friuns2/travelmaps/assets/16543239/99ac3dcf-f5b5-45d1-a9b0-eb169e710af0)
+
+
 # Travel Creator
 
 Travel Creator is a web application that helps users discover and plan their travel itineraries. Built with Nuxt 3 and utilizing the Google Maps API, this app allows users to explore attractions, create custom itineraries, and visualize their travel plans on an interactive map.
