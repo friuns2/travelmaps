@@ -1,0 +1,12 @@
+{
+  // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "@cloudflare/workers-types/2023-07-01","google.maps"
+    ],
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node"
+  }
+}

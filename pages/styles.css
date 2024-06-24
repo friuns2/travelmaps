@@ -1,0 +1,45 @@
+@keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -20px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  
+  .animate-fade-in-down {
+    animation: fadeInDown 0.5s ease-out;
+  }
+  
+  /* Add responsive design adjustments */
+  @media (max-width: 640px) {
+    #attraction-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (min-width: 641px) and (max-width: 1024px) {
+    #attraction-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  /* Add custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
