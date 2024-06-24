@@ -1,5 +1,3 @@
-
-
 https://github.com/friuns2/travelmaps/assets/16543239/3fc07810-ec7a-4c82-93c5-e9d5e8550002
 
 
@@ -19,6 +17,16 @@ Created with [GPTCall App Creator](https://app.gptcall.net/)
 - View attractions on an interactive map
 - Calculate and display directions for your itinerary
 - Responsive design for both desktop and mobile devices
+
+## Component-Based Architecture
+
+The application is structured around Vue components, making it modular and easy to maintain. This architecture allows for the separation of concerns, where each component is responsible for a specific part of the application's functionality. Here are the main components:
+
+- **AttractionList.vue**: Manages the list of attractions, including sorting and filtering options.
+- **MapView.vue**: Handles the display of the interactive map and the visualization of attractions and itineraries.
+- **AttractionDetails.vue**: Presents detailed information about a selected attraction.
+
+This structure not only improves code readability and maintainability but also makes it easier for developers to extend or modify components for future features.
 
 ## Getting Started
 
