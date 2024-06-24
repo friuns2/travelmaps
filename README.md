@@ -46,7 +46,7 @@ Travel Creator is a web application that helps users discover and plan their tra
    npm run dev
    ```
 
-5. Open your browser and navigate to `http://localhost:3000` to see the app in action.
+5. Open your browser and navigate to `http://localhost:3005` to see the app in action.
 
 ## Usage
 
