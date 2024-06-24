@@ -104,7 +104,7 @@ import { getCurrentInstance } from 'vue';
 
 const attractions = ref([]);
 const minRatingsCount = ref(0);
-const activeView = ref('list');
+const activeView = ref('map');
 const showItinerary = ref(false);
 const sortOrder = ref('distance');
 let map, infowindow, markers = [], directionsService, directionsRenderer;
@@ -178,13 +178,14 @@ const sortedAttractions = computed(() => {
 });
 
 globalThis.initMap = function initMap() {
-    
-    nextTick(() => {
-        autocomplete = new google.maps.places.Autocomplete(
-            autocompleteInput.value,
-            { types: ['(cities)'] }
-        );
-    });
+    autocomplete = new google.maps.places.Autocomplete(
+        autocompleteInput.value,
+        { 
+            types: ['geocode', 'establishment'],
+            fields: ['place_id', 'geometry', 'name']
+        }
+    );
+
     map = new google.maps.Map(document.getElementById('map'), {
         center: homeLocation.value,
         zoom: 12,
@@ -213,6 +214,7 @@ globalThis.initMap = function initMap() {
         icon: homeIcon,
         title: 'Bali'
     });
+    
 }
 
 function updateAttractions() {
