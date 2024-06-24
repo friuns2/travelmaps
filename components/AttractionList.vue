@@ -1,0 +1,103 @@
+<template>
+  <div>
+    <div class="mb-4 flex justify-between items-center">
+      <div>
+        <label for="sortOrder" class="mr-2 text-white">Sort by:</label>
+        <select id="sortOrder" v-model="state.sortOrder" class="bg-white bg-opacity-20 rounded-lg px-2 py-1 text-white">
+          <option value="relativity" class="text-black">Relativity</option>
+          <option value="popularity" class="text-black">Popularity</option>
+          <option value="distance" class="text-black">Distance</option>
+        </select>
+      </div>
+      <button v-if="computedState.hasItineraryItems" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
+        <i class="material-icons mr-2 text-xl">{{ state.showItinerary ? 'view_list' : 'directions' }}</i>
+        <span>{{ state.showItinerary ? 'Show All' : 'Show Itinerary' }}</span>
+      </button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="attraction-grid">
+      <TransitionGroup name="attraction-list">
+        <AttractionDetails
+          v-for="attraction in computedState.sortedAttractions"
+          :key="attraction.name"
+          :attraction="attraction"
+        />
+      </TransitionGroup>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { getState, useComputedState } from '../state.js'
+import AttractionDetails from './AttractionDetails.vue'
+
+const state = getState()
+const computedState = useComputedState()
+
+const toggleItinerary = () => {
+  state.value.showItinerary = !state.value.showItinerary
+  if (state.value.showItinerary) 
+    calculateDirections()
+  updateDistances()
+}
+
+const calculateDirections = () => {
+  const itineraryAttractions = state.value.attractions.filter(a => a.inItinerary)
+  if (itineraryAttractions.length < 2) return
+
+  const origin = itineraryAttractions[0].location
+  const destination = itineraryAttractions[itineraryAttractions.length - 1].location
+  const waypoints = itineraryAttractions.slice(1, -1).map(a => ({
+    location: a.location,
+    stopover: true
+  }))
+
+  state.value.directionsService.route({
+    origin: origin,
+    destination: destination,
+    waypoints: waypoints,
+    optimizeWaypoints: true,
+    travelMode: 'DRIVING'
+  }, (result, status) => {
+    if (status === 'OK') {
+      state.value.directionsRenderer.setDirections(result)
+    }
+  })
+}
+
+const updateDistances = () => {
+  const itineraryAttractions = state.value.attractions.filter(a => a.inItinerary)
+  state.value.attractions.forEach(attraction => {
+    if (attraction.inItinerary) {
+      attraction.distance = 0
+    } else {
+      let minDistance = calculateDistance(state.value.homeLocation, attraction.location)
+      itineraryAttractions.forEach(itineraryAttraction => {
+        const distanceToItinerary = calculateDistance(itineraryAttraction.location, attraction.location)
+        if (distanceToItinerary < minDistance) {
+          minDistance = distanceToItinerary
+        }
+      })
+      attraction.distance = minDistance
+    }
+  })
+}
+
+const calculateDistance = (point1, point2) => {
+  return google.maps.geometry.spherical.computeDistanceBetween(
+    new google.maps.LatLng(point1),
+    new google.maps.LatLng(point2)
+  ) / 1000
+}
+</script>
+
+<style scoped>
+.attraction-list-enter-active,
+.attraction-list-leave-active {
+  transition: all 0.5s ease;
+}
+.attraction-list-enter-from,
+.attraction-list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+</style>
