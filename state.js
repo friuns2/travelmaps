@@ -2,7 +2,8 @@ import { reactive } from 'vue'
 import { useState } from 'nuxt/app'
 
 export const getState = () => {
-  return reactive({
+  if(!globalThis.state)
+  globalThis.state= reactive({
     attractions: [],
     minRatingsCount: 0,
     activeView: 'map',
@@ -17,30 +18,34 @@ export const getState = () => {
     directionsRenderer: null,
     autocomplete: null
   })
+  return globalThis.state;
 }
 
 export const useComputedState = () => {
+  if(globalThis.computedState) return globalThis.computedState;
+
   const state = getState()
+  
 
   const filteredAttractions = computed(() => {
-    return state.value.attractions.filter(attraction => attraction.user_ratings_total >= state.value.minRatingsCount)
+    return state.attractions.filter(attraction => attraction.user_ratings_total >= state.minRatingsCount)
   })
 
   const displayedAttractions = computed(() => 
     filteredAttractions.value.filter(attraction => 
-      state.value.showItinerary === attraction.inItinerary
+      state.showItinerary === attraction.inItinerary
     )
   )
 
   const hasItineraryItems = computed(() => {
-    return state.value.attractions.some(attraction => attraction.inItinerary)
+    return state.attractions.some(attraction => attraction.inItinerary)
   })
 
   const sortedAttractions = computed(() => {
     return [...displayedAttractions.value].sort((a, b) => {
-      if (state.value.sortOrder === 'relativity') {
+      if (state.sortOrder === 'relativity') {
         return 0
-      } else if (state.value.sortOrder === 'popularity') {
+      } else if (state.sortOrder === 'popularity') {
         return b.user_ratings_total - a.user_ratings_total
       } else {
         return a.distance - b.distance
@@ -48,7 +53,7 @@ export const useComputedState = () => {
     })
   })
 
-  return {
+  return globalThis.computedState = {
     filteredAttractions,
     displayedAttractions,
     hasItineraryItems,

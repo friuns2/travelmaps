@@ -8,18 +8,18 @@ import { getState } from '../state'
 
 const state = getState()
 
-const initMap = () => {
-  state.value.map = new google.maps.Map(document.getElementById('map'), {
-    center: state.value.homeLocation,
+const initMap = globalThis.initMap = () => {
+  state.map = new google.maps.Map(document.getElementById('map'), {
+    center: state.homeLocation,
     zoom: 12,
   })
 
-  state.value.infowindow = new google.maps.InfoWindow()
-  state.value.directionsService = new google.maps.DirectionsService()
-  state.value.directionsRenderer = new google.maps.DirectionsRenderer()
-  state.value.directionsRenderer.setMap(state.value.map)
+  state.infowindow = new google.maps.InfoWindow()
+  state.directionsService = new google.maps.DirectionsService()
+  state.directionsRenderer = new google.maps.DirectionsRenderer()
+  state.directionsRenderer.setMap(state.map)
 
-  state.value.map.addListener('idle', () => {
+  state.map.addListener('idle', () => {
     updateAttractions()
   })
 
@@ -31,18 +31,18 @@ const initMap = () => {
   }
 
   new google.maps.Marker({
-    position: state.value.homeLocation,
-    map: state.value.map,
+    position: state.homeLocation,
+    map: state.map,
     icon: homeIcon,
     title: 'Bali'
   })
 }
 
 const updateAttractions = () => {
-  const bounds = state.value.map.getBounds()
-  const center = state.value.map.getCenter()
+  const bounds = state.map.getBounds()
+  const center = state.map.getCenter()
 
-  const service = new google.maps.places.PlacesService(state.value.map)
+  const service = new google.maps.places.PlacesService(state.map)
 
   service.nearbySearch({
     location: center,
@@ -51,7 +51,7 @@ const updateAttractions = () => {
   }, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       results.forEach(place => {
-        if (!state.value.attractions.some(a => a.name === place.name)) {
+        if (!state.attractions.some(a => a.name === place.name)) {
           service.getDetails({ placeId: place.place_id }, (details, status) => {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
               const attraction = {
@@ -62,9 +62,9 @@ const updateAttractions = () => {
                 photoUrl: details.photos ? details.photos[0].getUrl({ maxWidth: 500, maxHeight: 500 }) : '',
                 location: details.geometry.location,
                 inItinerary: false,
-                distance: calculateDistance(state.value.homeLocation, details.geometry.location)
+                distance: calculateDistance(state.homeLocation, details.geometry.location)
               }
-              state.value.attractions.push(attraction)
+              state.attractions.push(attraction)
               createMarker(attraction)
             }
           })
@@ -83,7 +83,7 @@ const calculateDistance = (point1, point2) => {
 
 const createMarker = (attraction) => {
   const marker = new google.maps.Marker({
-    map: state.value.map,
+    map: state.map,
     position: attraction.location,
     title: attraction.name,
     animation: google.maps.Animation.DROP,
@@ -96,7 +96,7 @@ const createMarker = (attraction) => {
     }
   })
 
-  state.value.markers.push(marker)
+  state.markers.push(marker)
 
   marker.addListener('click', function () {
     focusAttraction(attraction)
@@ -104,7 +104,7 @@ const createMarker = (attraction) => {
 }
 
 const focusAttraction = (attraction) => {
-  state.value.map.panTo(attraction.location)
+  state.map.panTo(attraction.location)
 }
 
 onMounted(() => {
@@ -113,9 +113,9 @@ onMounted(() => {
   }
 })
 
-watch(() => state.value.attractions, (newAttractions) => {
-  state.value.markers.forEach(marker => marker.setMap(null))
-  state.value.markers = []
+watch(() => state.attractions, (newAttractions) => {
+  state.markers.forEach(marker => marker.setMap(null))
+  state.markers = []
   newAttractions.forEach(attraction => createMarker(attraction))
 }, { deep: true })
 </script>

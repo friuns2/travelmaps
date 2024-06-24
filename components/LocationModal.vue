@@ -22,18 +22,18 @@ const state = getState()
 const autocompleteInput = ref(null)
 
 const toggleModal = () => {
-  state.value.showModal = !state.value.showModal
+  state.showModal = !state.showModal
 }
 
 const setNewLocation = () => {
-  if (state.value.autocomplete) {
-    const place = state.value.autocomplete.getPlace()
+  if (state.autocomplete) {
+    const place = state.autocomplete.getPlace()
     if (place && place.geometry) {
-      state.value.homeLocation = {
+      state.homeLocation = {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng()
       }
-      state.value.map.setCenter(state.value.homeLocation)
+      state.map.setCenter(state.homeLocation)
       clearMarkers()
       toggleModal()
       
@@ -46,15 +46,15 @@ const setNewLocation = () => {
 }
 
 const clearMarkers = () => {
-  state.value.markers.forEach(marker => marker.setMap(null))
-  state.value.markers = []
-  state.value.attractions = []
-  state.value.directionsRenderer.setDirections({ routes: [] })
+  state.markers.forEach(marker => marker.setMap(null))
+  state.markers = []
+  state.attractions = []
+  state.directionsRenderer.setDirections({ routes: [] })
 }
 
 onMounted(() => {
   if (window.google && window.google.maps) {
-    state.value.autocomplete = new google.maps.places.Autocomplete(
+    state.autocomplete = new google.maps.places.Autocomplete(
       autocompleteInput.value,
       { 
         types: ['geocode', 'establishment'],
@@ -64,7 +64,7 @@ onMounted(() => {
   }
 })
 
-watch(() => state.value.showModal, (newValue) => {
+watch(() => state.showModal, (newValue) => {
   if (newValue) {
     nextTick(() => {
       autocompleteInput.value.focus()

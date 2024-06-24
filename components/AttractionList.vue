@@ -9,7 +9,7 @@
           <option value="distance" class="text-black">Distance</option>
         </select>
       </div>
-      <button v-if="computedState.hasItineraryItems" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
+      <button v-if="computedState.hasItineraryItems.value" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
         <i class="material-icons mr-2 text-xl">{{ state.showItinerary ? 'view_list' : 'directions' }}</i>
         <span>{{ state.showItinerary ? 'Show All' : 'Show Itinerary' }}</span>
       </button>
@@ -17,7 +17,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="attraction-grid">
       <TransitionGroup name="attraction-list">
         <AttractionDetails
-          v-for="attraction in computedState.sortedAttractions"
+          v-for="attraction in computedState.sortedAttractions.value"
           :key="attraction.name"
           :attraction="attraction"
         />
@@ -34,14 +34,14 @@ const state = getState()
 const computedState = useComputedState()
 
 const toggleItinerary = () => {
-  state.value.showItinerary = !state.value.showItinerary
-  if (state.value.showItinerary) 
+  state.showItinerary = !state.showItinerary
+  if (state.showItinerary) 
     calculateDirections()
   updateDistances()
 }
 
 const calculateDirections = () => {
-  const itineraryAttractions = state.value.attractions.filter(a => a.inItinerary)
+  const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
   if (itineraryAttractions.length < 2) return
 
   const origin = itineraryAttractions[0].location
@@ -51,7 +51,7 @@ const calculateDirections = () => {
     stopover: true
   }))
 
-  state.value.directionsService.route({
+  state.directionsService.route({
     origin: origin,
     destination: destination,
     waypoints: waypoints,
@@ -59,18 +59,18 @@ const calculateDirections = () => {
     travelMode: 'DRIVING'
   }, (result, status) => {
     if (status === 'OK') {
-      state.value.directionsRenderer.setDirections(result)
+      state.directionsRenderer.setDirections(result)
     }
   })
 }
 
 const updateDistances = () => {
-  const itineraryAttractions = state.value.attractions.filter(a => a.inItinerary)
-  state.value.attractions.forEach(attraction => {
+  const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
+  state.attractions.forEach(attraction => {
     if (attraction.inItinerary) {
       attraction.distance = 0
     } else {
-      let minDistance = calculateDistance(state.value.homeLocation, attraction.location)
+      let minDistance = calculateDistance(state.homeLocation, attraction.location)
       itineraryAttractions.forEach(itineraryAttraction => {
         const distanceToItinerary = calculateDistance(itineraryAttraction.location, attraction.location)
         if (distanceToItinerary < minDistance) {

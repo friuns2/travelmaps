@@ -40,18 +40,18 @@
   const state = getState()
   
   const toggleModal = () => {
-    state.value.showModal = !state.value.showModal
+    state.showModal = !state.showModal
   }
   
   const ActiveView = (view) => {
-    state.value.activeView = view
+    state.activeView = view
     if (view === 'map') {
       calculateDirections()
     }
   }
   
   const calculateDirections = () => {
-    const itineraryAttractions = state.value.attractions.filter(a => a.inItinerary)
+    const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
     if (itineraryAttractions.length < 2) return
   
     const origin = itineraryAttractions[0].location
@@ -61,7 +61,7 @@
       stopover: true
     }))
   
-    state.value.directionsService.route({
+    state.directionsService.route({
       origin: origin,
       destination: destination,
       waypoints: waypoints,
@@ -69,7 +69,7 @@
       travelMode: 'DRIVING'
     }, (result, status) => {
       if (status === 'OK') {
-        state.value.directionsRenderer.setDirections(result)
+        state.directionsRenderer.setDirections(result)
       }
     })
   }
