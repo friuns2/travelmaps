@@ -1,6 +1,6 @@
 
+https://github.com/friuns2/travelmaps/assets/16543239/af65de97-e367-4875-be79-b75df41c02b4
 
-https://github.com/friuns2/travelmaps/assets/16543239/3fc07810-ec7a-4c82-93c5-e9d5e8550002
 
 
 # Travel Creator
