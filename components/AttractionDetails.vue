@@ -84,27 +84,4 @@ const calculateDistance = (point1, point2) => {
     ) / 1000
 }
 
-const calculateDirections = () => {
-    const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
-    if (itineraryAttractions.length < 2) return
-
-    const origin = itineraryAttractions[0].location
-    const destination = itineraryAttractions[itineraryAttractions.length - 1].location
-    const waypoints = itineraryAttractions.slice(1, -1).map(a => ({
-        location: a.location,
-        stopover: true
-    }))
-
-    state.directionsService.route({
-        origin: origin,
-        destination: destination,
-        waypoints: waypoints,
-        optimizeWaypoints: true,
-        travelMode: 'DRIVING'
-    }, (result, status) => {
-        if (status === 'OK') {
-            state.directionsRenderer.setDirections(result)
-        }
-    })
-}
 </script>

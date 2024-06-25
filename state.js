@@ -1,5 +1,7 @@
 import { reactive } from 'vue'
 import { useState } from 'nuxt/app'
+import { toRaw } from 'vue';
+globalThis.getRawState = () => toRaw(getState());
 let State = {
   attractions: [],
   minRatingsCount: 0,
