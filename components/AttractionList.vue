@@ -9,7 +9,7 @@
           <option value="distance" class="text-black">Distance</option>
         </select>
       </div>
-      <button v-if="computedState.hasItineraryItems.value" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
+      <button v-if="hasItineraryItems" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
         <i class="material-icons mr-2 text-xl">{{ state.showItinerary ? 'view_list' : 'directions' }}</i>
         <span>{{ state.showItinerary ? 'Show All' : 'Show Itinerary' }}</span>
       </button>
@@ -17,7 +17,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="attraction-grid">
       <TransitionGroup name="attraction-list">
         <AttractionDetails
-          v-for="attraction in computedState.sortedAttractions.value"
+          v-for="attraction in sortedAttractions"
           :key="attraction.name"
           :attraction="attraction"
         />
@@ -27,12 +27,37 @@
 </template>
 
 <script setup>
-import { getState, useComputedState } from '../state.js'
+import { computed } from 'vue'
+import { getState } from '../state.js'
 import AttractionDetails from './AttractionDetails.vue'
 
 const state = getState()
-const computedState = useComputedState()
 
+const filteredAttractions = computed(() => {
+  return state.attractions.filter(attraction => attraction.user_ratings_total >= state.minRatingsCount)
+})
+
+const displayedAttractions = computed(() => 
+  filteredAttractions.value.filter(attraction => 
+    state.showItinerary === attraction.inItinerary
+  )
+)
+
+const hasItineraryItems = computed(() => {
+  return state.attractions.some(attraction => attraction.inItinerary)
+})
+
+const sortedAttractions = computed(() => {
+  return [...displayedAttractions.value].sort((a, b) => {
+    if (state.sortOrder === 'relativity') {
+      return 0
+    } else if (state.sortOrder === 'popularity') {
+      return b.user_ratings_total - a.user_ratings_total
+    } else {
+      return a.distance - b.distance
+    }
+  })
+})
 const toggleItinerary = () => {
   state.showItinerary = !state.showItinerary
   if (state.showItinerary) 

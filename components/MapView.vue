@@ -113,9 +113,5 @@ onMounted(() => {
   }
 })
 
-watch(() => state.attractions, (newAttractions) => {
-  state.markers.forEach(marker => marker.setMap(null))
-  state.markers = []
-  newAttractions.forEach(attraction => createMarker(attraction))
-}, { deep: true })
+
 </script>
