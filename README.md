@@ -1,5 +1,3 @@
-
-
 https://github.com/friuns2/travelmaps/assets/16543239/3fc07810-ec7a-4c82-93c5-e9d5e8550002
 
 
@@ -61,6 +59,18 @@ Created with [GPTCall App Creator](https://app.gptcall.net/)
 4. Add attractions to your itinerary using the "Add to Itinerary" button.
 5. Toggle between list and map views on mobile devices.
 6. Use the "Show Itinerary" button to view your planned route.
+
+## Component Structure and Usage
+
+The application's logic has been refactored to split into multiple Vue components for better maintainability and scalability. Here's an overview of the new components and how they are used:
+
+- `AttractionList.vue`: This component is responsible for rendering the list of attractions. It receives the list of attractions as a prop and handles user interactions such as focusing on an attraction or toggling it in the itinerary.
+
+- `MapView.vue`: This component handles the display of the interactive map. It receives the home location and the list of attractions as props, and it is responsible for initializing the map, creating markers, and displaying directions.
+
+- `Filters.vue`: This component provides the UI for filtering attractions based on the minimum rating count. It receives the minimum rating count as a prop and emits an event when the value changes.
+
+These components are imported and used in the `pages/index.vue` file, which acts as the main entry point for the application's UI.
 
 ## Future Plans
 
