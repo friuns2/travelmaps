@@ -46,10 +46,9 @@
   const ActiveView = (view) => {
     state.activeView = view
     if (view === 'map') {
-      calculateDirections()
+      globalThis.calculateDirections()
     }
   }
-  
 
   </script>
   

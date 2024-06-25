@@ -21,8 +21,12 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240620.0",
+    "@eslint/js": "^9.5.0",
     "@types/google.maps": "^3.55.10",
     "daisyui": "^4.12.6",
+    "eslint": "^9.5.0",
+    "eslint-plugin-vue": "^9.26.0",
+    "globals": "^15.6.0",
     "nitro-cloudflare-dev": "^0.1.4",
     "wrangler": "^3.61.0"
   }

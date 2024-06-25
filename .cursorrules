@@ -1,1 +1,1 @@
-nuxt 3,use daisyUI components whenver possible
+nuxt 3,use daisyUI components whenver possible, prefer globalThis over export

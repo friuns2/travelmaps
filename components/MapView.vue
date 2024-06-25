@@ -3,10 +3,8 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
-import { getState } from '../state'
+import { onMounted } from 'vue'
 
-const state = getState()
 
 const initMap = globalThis.initMap = () => {
   state.map = new google.maps.Map(document.getElementById('map'), {
@@ -65,21 +63,21 @@ globalThis.calculateDirections = () => {
 
 
 const updateAttractions = () => {
-  const bounds = state.map.getBounds()
+  
   const center = state.map.getCenter()
 
-  const service = new google.maps.places.PlacesService(state.map)
+  const service = new globalThis.google.maps.places.PlacesService(state.map)
 
   service.nearbySearch({
     location: center,
     radius: 20000,
     type: ['tourist_attraction']
   }, (results, status) => {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
+    if (status === globalThis.google.maps.places.PlacesServiceStatus.OK) {
       results.forEach(place => {
         if (!state.attractions.some(a => a.name === place.name)) {
           service.getDetails({ placeId: place.place_id }, (details, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
+            if (status === globalThis.google.maps.places.PlacesServiceStatus.OK) {
               const attraction = {
                 name: details.name,
                 rating: details.rating,

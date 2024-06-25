@@ -61,7 +61,7 @@ const sortedAttractions = computed(() => {
 const toggleItinerary = () => {
   state.showItinerary = !state.showItinerary
   if (state.showItinerary) 
-    calculateDirections()
+    globalThis.calculateDirections()
   updateDistances()
 }
 

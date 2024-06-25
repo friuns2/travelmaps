@@ -1,8 +1,7 @@
 import { reactive } from 'vue'
-import { useState } from 'nuxt/app'
 import { toRaw } from 'vue';
 globalThis.getRawState = () => toRaw(getState());
-let State = {
+globalThis.state = {
   attractions: [],
   minRatingsCount: 0,
   activeView: 'map',
@@ -23,7 +22,7 @@ let State = {
  */
 export const getState = () => {
   if(!globalThis.state)
-    globalThis.state = reactive(State)
+    globalThis.state = reactive(state)
   return globalThis.state;
 }
 
