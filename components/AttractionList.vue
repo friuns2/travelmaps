@@ -34,19 +34,22 @@ import AttractionDetails from './AttractionDetails.vue'
 const state = getState()
 
 const filteredAttractions = computed(() => {
-  return state.attractions.filter(attraction => attraction.user_ratings_total >= state.minRatingsCount)
+  return state.attractions.filter(attraction => attraction.user_ratings_total >= state._minRatingsCount)
 })
 
 const displayedAttractions = computed(() => 
   filteredAttractions.value.filter(attraction => 
-    state.showItinerary === attraction.inItinerary
+    state.showItinerary === state._selectedAttractions.includes(attraction.name)
   )
 )
 
 const hasItineraryItems = computed(() => {
-  return state.attractions.some(attraction => attraction.inItinerary)
+  return state._selectedAttractions.length > 0
 })
 
+watch(hasItineraryItems, () => {
+  //if(!hasItineraryItems.value)state.showItinerary = false;
+})
 const sortedAttractions = computed(() => {
   return [...displayedAttractions.value].sort((a, b) => {
     if (state.sortOrder === 'relativity') {
@@ -60,17 +63,17 @@ const sortedAttractions = computed(() => {
 })
 const toggleItinerary = () => {
   state.showItinerary = !state.showItinerary
-  if (state.showItinerary) 
+  if (state.showItinerary) {
     globalThis.calculateDirections()
-  updateDistances()
+    globalThis.updateDistances()
+  }
 }
 
 
-
-const updateDistances = () => {
-  const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
+globalThis.updateDistances = () => {
+  const itineraryAttractions = state.attractions.filter(a => state._selectedAttractions.includes(a.name))
   state.attractions.forEach(attraction => {
-    if (attraction.inItinerary) {
+    if (state._selectedAttractions.includes(attraction.name)) {
       attraction.distance = 0
     } else {
       let minDistance = calculateDistance(state.homeLocation, attraction.location)
@@ -84,7 +87,6 @@ const updateDistances = () => {
     }
   })
 }
-
 const calculateDistance = (point1, point2) => {
   return google.maps.geometry.spherical.computeDistanceBetween(
     new google.maps.LatLng(point1),

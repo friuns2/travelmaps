@@ -4,7 +4,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
-
+import { Attraction } from '../state'
 
 const initMap = globalThis.initMap = () => {
   state.map = new google.maps.Map(document.getElementById('map'), {
@@ -66,29 +66,20 @@ const updateAttractions = () => {
   
   const center = state.map.getCenter()
 
-  const service = new globalThis.google.maps.places.PlacesService(state.map)
+  const service = new google.maps.places.PlacesService(state.map)
 
   service.nearbySearch({
     location: center,
     radius: 20000,
     type: ['tourist_attraction']
   }, (results, status) => {
-    if (status === globalThis.google.maps.places.PlacesServiceStatus.OK) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
       results.forEach(place => {
         if (!state.attractions.some(a => a.name === place.name)) {
           service.getDetails({ placeId: place.place_id }, (details, status) => {
-            if (status === globalThis.google.maps.places.PlacesServiceStatus.OK) {
-              const attraction = {
-                name: details.name,
-                rating: details.rating,
-                user_ratings_total: details.user_ratings_total,
-                address: details.vicinity,
-                photoUrl: details.photos ? details.photos[0].getUrl({ maxWidth: 500, maxHeight: 500 }) : '',
-                location: details.geometry.location,
-                inItinerary: false,
-                distance: calculateDistance(state.homeLocation, details.geometry.location)
-              }
-              state.attractions.push(attraction)
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              const attraction = Attraction(details,{distance: calculateDistance(state.homeLocation, details.geometry.location)})
+              state.attractions.push(attraction)              
               createMarker(attraction)
             }
           })
@@ -99,11 +90,11 @@ const updateAttractions = () => {
 }
 
 const calculateDistance = (point1, point2) => {
-  return google.maps.geometry.spherical.computeDistanceBetween(
-    new google.maps.LatLng(point1),
-    new google.maps.LatLng(point2)
-  ) / 1000
-}
+    return google.maps.geometry.spherical.computeDistanceBetween(
+      new google.maps.LatLng(point1),
+      new google.maps.LatLng(point2)
+    ) / 1000
+  }
 
 const createMarker = (attraction) => {
   const marker = new google.maps.Marker({

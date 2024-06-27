@@ -25,11 +25,14 @@
 </template>
 <script setup>
 import { getState } from '~/state'
+import { Attraction } from '~/state'
 
 const state = getState()
 
-const props = defineProps({
-    attraction: {
+defineProps({
+    /** @type {import('vue').PropType<ReturnType<typeof Attraction>>} */
+    attraction:
+    {
         type: Object,
         required: true
     }
@@ -41,47 +44,28 @@ const focusAttraction = (attraction) => {
 }
 
 const toggleAttractionInItinerary = (attraction) => {
-    attraction.inItinerary = !attraction.inItinerary
+    const index = state._selectedAttractions.indexOf(attraction.name)
+    if (index === -1) {
+        state._selectedAttractions.push(attraction.name)
+    } else {
+        state._selectedAttractions.splice(index, 1)
+    }
     state.map.panTo(attraction.location)
     const marker = state.markers.find(marker => marker.getPosition().equals(attraction.location))
     marker.setIcon({
         path: google.maps.SymbolPath.CIRCLE,
         scale: 8,
-        fillColor: attraction.inItinerary ? '#4CAF50' : '#FFA500',
+        fillColor: state._selectedAttractions.includes(attraction.name) ? '#4CAF50' : '#FFA500',
         fillOpacity: 0.9,
         strokeWeight: 0
     })
-    updateDistances()
-    if (!attraction.inItinerary)
-        calculateDirections()
-    if (!state.attractions.some(a => a.inItinerary)) {
+    globalThis.updateDistances()
+    if (!state._selectedAttractions.includes(attraction.name))
+        globalThis.calculateDirections()
+    if (state._selectedAttractions.length === 0) {
         state.activeView = 'map'
     }
 }
 
-const updateDistances = () => {
-    const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
-    state.attractions.forEach(attraction => {
-        if (attraction.inItinerary) {
-            attraction.distance = 0
-        } else {
-            let minDistance = calculateDistance(state.homeLocation, attraction.location)
-            itineraryAttractions.forEach(itineraryAttraction => {
-                const distanceToItinerary = calculateDistance(itineraryAttraction.location, attraction.location)
-                if (distanceToItinerary < minDistance) {
-                    minDistance = distanceToItinerary
-                }
-            })
-            attraction.distance = minDistance
-        }
-    })
-}
-
-const calculateDistance = (point1, point2) => {
-    return google.maps.geometry.spherical.computeDistanceBetween(
-        new google.maps.LatLng(point1),
-        new google.maps.LatLng(point2)
-    ) / 1000
-}
 
 </script>
