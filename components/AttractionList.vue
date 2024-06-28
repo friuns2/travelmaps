@@ -17,7 +17,7 @@
     <div class="flex flex-wrap justify-between items-center mb-4">
       <div class="flex-grow mx-4 mb-4">
         <label for="placeType" class="block text-sm font-medium mb-1">Place Type:</label>
-        <select id="placeType" v-model="state.placeType" class="select select-primary w-full max-w-xs">
+        <select id="placeType" v-model="state._placeType" class="select select-primary w-full max-w-xs">
           <option value="attraction">Attractions</option>
           <option value="food">Restaurants</option>
         </select>

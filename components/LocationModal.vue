@@ -48,7 +48,8 @@ const setNewLocation = () => {
 const updateLocation = (location, placeName = 'Current Location') => {
   state._homeLocation = location
   state.map.setCenter(location)
-  clearMarkers()
+  state._selectedAttractions = [];
+  globalThis.clearMarkers()
   toggleModal()
   state._title = `Attractions near ${placeName}`
 }
@@ -57,14 +58,7 @@ watch(() => state._title, (newValue) => {
   document.querySelector('h1').textContent = newValue
 })
 
-const clearMarkers = () => {
-  state.markers.forEach(marker => marker.setMap(null))
-  state.markers = []
-  state.attractions = []
-  state.directionsRenderer.setDirections({ routes: [] })
-  state.showItinerary = false;
-  state._selectedAttractions = [];
-}
+
 setTimeout(() => {
   state.autocomplete = new google.maps.places.Autocomplete(
       autocompleteInput.value,

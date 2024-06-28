@@ -21,7 +21,8 @@ let State = {
     directionsRenderer: null,
     autocomplete: null,
     _selectedAttractions: [] ,
-    placeType: 'attraction' // Add this line
+    _placeType: 'attraction',
+    
 };
 
 

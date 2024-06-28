@@ -17,9 +17,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Travel Creator - Discover and Plan Your Travel Itineraries with AI',
-      meta: [
-        
+      meta: [        
         {
           name: 'description',
           content: 'Travel Creator helps you discover and plan your travel itineraries. Explore attractions, create custom itineraries, and visualize your travel plans on an interactive map.'
