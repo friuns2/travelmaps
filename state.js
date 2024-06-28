@@ -32,7 +32,7 @@ export const Attraction = (details,{distance}) => {
         rating: details.rating,
         user_ratings_total: details.user_ratings_total,
         address: details.vicinity,
-        photoUrl: details.photos ? details.photos[0].getUrl({ maxWidth: 500, maxHeight: 500 }) : '',
+        reviews: details.reviews,
         photos: details.photos,
         location: details.geometry.location,
         get inItinerary() {

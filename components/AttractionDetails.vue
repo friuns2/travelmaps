@@ -3,7 +3,10 @@
         @click="focusAttraction(attraction)">
         <div class="carousel w-full h-48">
             <div v-for="(photo, index) in attraction.photos.slice(1)" :key="index" :id="`slide${index}`" class="carousel-item relative w-full">
-                <img :src="photo.getUrl({ maxWidth: 400, maxHeight: 300 })" class="w-full object-cover" alt="Additional photo" loading="lazy">               
+                <img :src="photo.getUrl({ maxWidth: 400, maxHeight: 300 })" class="w-full object-cover" alt="Additional photo" loading="lazy">
+                <div class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2 w-full text-center line-clamp-2">
+                    {{ attraction.reviews[index]?.text }}
+                </div>
             </div>
         </div>
         <div class="p-4">
