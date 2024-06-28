@@ -15,26 +15,26 @@ export function useReactive(key, items) {
     globalThis[key] = items;
     return items;
 }
-export function HookRouter(params) {
+let oldQuery;
+export function HookRouter(params, router) {
     let defaultParams = JSON.parse(JSON.stringify(params));
     let isUpdatingFromPush = false;
 
     if (defaultParams) {
-        const router = useRouter();
-        updateParamsFromHash(params, defaultParams);
+        updateParamsFromHash(params, defaultParams, router);
         router.afterEach((to, from) => {
             if (!isUpdatingFromPush) {
-                updateParamsFromHash(params, defaultParams);
+                updateParamsFromHash(params, defaultParams, router);
             }
             isUpdatingFromPush = false;
         });
-    }
+    } 
 
     const watchers = Object.keys(params || {}).reduce((watchers, key) => {
         if (!key.startsWith('_')) return watchers;
-        const router = useRouter();
         watchers[key] = function (newValue, oldValue) {
-            const query = { ...router.currentRoute.value.query, [key]: JSON.stringify(newValue) };
+            const query = { ...router.currentRoute.value.query, ...oldQuery, [key]: JSON.stringify(newValue) };
+            oldQuery = query;
             clearTimeout(globalThis.updateQueryTimeout);
             
             globalThis.updateQueryTimeout = setTimeout(() => {
@@ -47,14 +47,14 @@ export function HookRouter(params) {
     }, {});
 
     Object.keys(watchers).forEach(key => {
-        watch(() => params[key], watchers[key], { deep: true, flush: 'sync' });
+        watch(() => params[key], watchers[key], { deep: true/*, flush: 'sync' */ });
     });
 }
 
-const updateParamsFromHash = (params, defaultParams) => {
-    const router = useRouter();
+const updateParamsFromHash = (params, defaultParams, router) => {
     const hashParams = new URLSearchParams(router.currentRoute.value.query);
     for (let key in params) {
+        if (!key.startsWith('_')) continue;
         if (hashParams.has(key)) {
             try {
                 const newValue = JSON.parse(hashParams.get(key));

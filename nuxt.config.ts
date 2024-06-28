@@ -39,7 +39,7 @@ export default defineNuxtConfig({
         gtag('config', 'G-WT3VZNT7E6');
       `,
           type: 'text/javascript'
-        }
+        } 
 
       ]
     }

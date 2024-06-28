@@ -2,6 +2,7 @@ import { HookRouter } from '~/utils/reactive.js';
 import { reactive } from 'vue'
 
 import { toRaw } from 'vue';
+import { useRouter } from 'vue-router';
 globalThis.getRawState = () => toRaw(getState());
 let State = {
 
@@ -10,16 +11,17 @@ let State = {
     _minRatingsCount: 0,
     activeView: 'map',
     showItinerary: false,
-    sortOrder: 'distance',
-    homeLocation: { lat: -8.4095, lng: 115.1889 },
+    _sortOrder: 'distance',
+    _homeLocation: { lat: -8.4095, lng: 115.1889 },
+    _title: '',
     showModal: false,
     map: null,
-    infowindow: null,
     markers: [],
     directionsService: null,
     directionsRenderer: null,
     autocomplete: null,
-    _selectedAttractions: [] 
+    _selectedAttractions: [] ,
+    placeType: 'attraction' // Add this line
 };
 
 
@@ -47,7 +49,10 @@ export const Attraction = (details,{distance}) => {
 export const getState = () => {
     if (!globalThis.state) {
         State = globalThis.state = reactive(State)
-        HookRouter(State)
+        let router = useRouter();
+        nextTick(() => { //wait for watch initialized
+            HookRouter(State, router);
+        });
     }
     return globalThis.state;
 }

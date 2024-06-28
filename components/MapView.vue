@@ -3,21 +3,24 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { Attraction } from '../state'
+import { onMounted, watch } from 'vue'
+import { Attraction,getState  } from '../state'
+let state = getState();
 
 const initMap = globalThis.initMap = () => {
   state.map = new google.maps.Map(document.getElementById('map'), {
-    center: state.homeLocation,
+    center: state._homeLocation,
     zoom: 12,
   })
 
-  state.infowindow = new google.maps.InfoWindow()
   state.directionsService = new google.maps.DirectionsService()
   state.directionsRenderer = new google.maps.DirectionsRenderer()
   state.directionsRenderer.setMap(state.map)
 
   state.map.addListener('idle', () => {
+    updateAttractions()
+  })
+  watch(() => state.placeType, () => {
     updateAttractions()
   })
 
@@ -29,7 +32,7 @@ const initMap = globalThis.initMap = () => {
   }
 
   new google.maps.Marker({
-    position: state.homeLocation,
+    position: state._homeLocation,
     map: state.map,
     icon: homeIcon,
     title: 'Bali'
@@ -39,11 +42,11 @@ const initMap = globalThis.initMap = () => {
 
 globalThis.calculateDirections = () => {
     const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
-    if (itineraryAttractions.length < 2) return
+    if (itineraryAttractions.length === 0) return
 
-    const origin = itineraryAttractions[0].location
+    const origin = state._homeLocation
     const destination = itineraryAttractions[itineraryAttractions.length - 1].location
-    const waypoints = itineraryAttractions.slice(1, -1).map(a => ({
+    const waypoints = itineraryAttractions.map(a => ({
         location: a.location,
         stopover: true
     }))
@@ -61,25 +64,23 @@ globalThis.calculateDirections = () => {
     })
 }
 
-
 const updateAttractions = () => {
-  
   const center = state.map.getCenter()
-
   const service = new google.maps.places.PlacesService(state.map)
+  const placeType = state.placeType === 'food' ? 'restaurant' : 'tourist_attraction'
 
   service.nearbySearch({
     location: center,
     radius: 20000,
-    type: ['tourist_attraction']
+    type: [placeType]
   }, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       results.forEach(place => {
         if (!state.attractions.some(a => a.name === place.name)) {
           service.getDetails({ placeId: place.place_id }, (details, status) => {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
-              const attraction = Attraction(details,{distance: calculateDistance(state.homeLocation, details.geometry.location)})
-              state.attractions.push(attraction)              
+              const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location) })
+              state.attractions.push(attraction)
               createMarker(attraction)
             }
           })
@@ -89,12 +90,6 @@ const updateAttractions = () => {
   })
 }
 
-const calculateDistance = (point1, point2) => {
-    return google.maps.geometry.spherical.computeDistanceBetween(
-      new google.maps.LatLng(point1),
-      new google.maps.LatLng(point2)
-    ) / 1000
-  }
 
 const createMarker = (attraction) => {
   const marker = new google.maps.Marker({

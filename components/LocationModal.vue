@@ -11,7 +11,7 @@
         @keyup.enter="setNewLocation">
       <button @click="setNewLocation" class="btn btn-primary w-full text-white"> Set Location </button>
     </div>
-  </div>
+  </div> 
 </template>
 
 <script setup>
@@ -26,43 +26,55 @@ const toggleModal = () => {
 }
 
 const setNewLocation = () => {
-  if (state.autocomplete) {
-    const place = state.autocomplete.getPlace()
+  const place = state.autocomplete.getPlace()
+  if (place) {
     if (place && place.geometry) {
-      state.homeLocation = {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
-      }
-      state.map.setCenter(state.homeLocation)
-      clearMarkers()
-      toggleModal()
-      
-      if (place.name) {
-        document.title = `Attractions in ${place.name}`
-        document.querySelector('h1').textContent = `${place.name} Attractions`
-      }
+      updateLocation(place.geometry.location, place.name)
     }
+  } else {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        }
+        updateLocation(location)
+      },
+      () => alert('Unable to get location. Please enter manually.')
+    )
   }
 }
+
+const updateLocation = (location, placeName = 'Current Location') => {
+  state._homeLocation = location
+  state.map.setCenter(location)
+  clearMarkers()
+  toggleModal()
+  state._title = `Attractions near ${placeName}`
+}
+watch(() => state._title, (newValue) => {
+  document.title = newValue
+  document.querySelector('h1').textContent = newValue
+})
 
 const clearMarkers = () => {
   state.markers.forEach(marker => marker.setMap(null))
   state.markers = []
   state.attractions = []
   state.directionsRenderer.setDirections({ routes: [] })
+  state.showItinerary = false;
+  state._selectedAttractions = [];
 }
-
-onMounted(() => {
-  if (window.google && window.google.maps) {
-    state.autocomplete = new google.maps.places.Autocomplete(
+setTimeout(() => {
+  state.autocomplete = new google.maps.places.Autocomplete(
       autocompleteInput.value,
       { 
         types: ['geocode', 'establishment'],
         fields: ['place_id', 'geometry', 'name']
       }
     )
-  }
-})
+    globalThis.calculateDirections();
+}, 1000);
 
 watch(() => state.showModal, (newValue) => {
   if (newValue) {

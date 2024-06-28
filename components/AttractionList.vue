@@ -3,7 +3,7 @@
     <div class="mb-4 flex justify-between items-center">
       <div>
         <label for="sortOrder" class="mr-2 text-white">Sort by:</label>
-        <select id="sortOrder" v-model="state.sortOrder" class="bg-white bg-opacity-20 rounded-lg px-2 py-1 text-white">
+        <select id="sortOrder" v-model="state._sortOrder" class="bg-white bg-opacity-20 rounded-lg px-2 py-1 text-white">
           <option value="relativity" class="text-black">Relativity</option>
           <option value="popularity" class="text-black">Popularity</option>
           <option value="distance" class="text-black">Distance</option>
@@ -11,8 +11,24 @@
       </div>
       <button v-if="hasItineraryItems" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
         <i class="material-icons mr-2 text-xl">{{ state.showItinerary ? 'view_list' : 'directions' }}</i>
-        <span>{{ state.showItinerary ? 'Show All' : 'Show Itinerary' }}</span>
+        <span>{{ state.showItinerary ? `Show All (${filteredAttractions.length})` : `Show Itinerary (${state._selectedAttractions.length})` }}</span>
       </button>
+    </div>
+    <div class="flex flex-wrap justify-between items-center mb-4">
+      <div class="flex-grow mx-4 mb-4">
+        <label for="placeType" class="block text-sm font-medium mb-1">Place Type:</label>
+        <select id="placeType" v-model="state.placeType" class="select select-primary w-full max-w-xs">
+          <option value="attraction">Attractions</option>
+          <option value="food">Restaurants</option>
+        </select>
+      </div>
+      <div class="flex-grow mx-4">
+        <label for="minRatingsCount" class="block text-sm font-medium mb-1">Minimum Ratings Count:</label>
+        <div class="flex items-center space-x-2">
+          <input type="range" id="minRatingsCount" min="0" max="1000" v-model="state._minRatingsCount" class="range range-sm range-primary flex-grow" />
+          <span class="badge badge-primary badge-outline min-w-[3rem] text-center">{{ state._minRatingsCount }}</span>
+        </div>
+      </div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="attraction-grid">
       <TransitionGroup name="attraction-list">
@@ -25,7 +41,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { computed } from 'vue'
 import { getState } from '../state.js'
@@ -48,13 +63,14 @@ const hasItineraryItems = computed(() => {
 })
 
 watch(hasItineraryItems, () => {
-  //if(!hasItineraryItems.value)state.showItinerary = false;
+  if(!hasItineraryItems.value)
+    state.showItinerary = false
 })
 const sortedAttractions = computed(() => {
   return [...displayedAttractions.value].sort((a, b) => {
-    if (state.sortOrder === 'relativity') {
+    if (state._sortOrder === 'relativity') {
       return 0
-    } else if (state.sortOrder === 'popularity') {
+    } else if (state._sortOrder === 'popularity') {
       return b.user_ratings_total - a.user_ratings_total
     } else {
       return a.distance - b.distance
@@ -62,12 +78,15 @@ const sortedAttractions = computed(() => {
   })
 })
 const toggleItinerary = () => {
-  state.showItinerary = !state.showItinerary
-  if (state.showItinerary) {
+  state.showItinerary = !state.showItinerary  
+}
+watch(() => [state.showItinerary, state._selectedAttractions.length], (newValue) => {
+  
     globalThis.calculateDirections()
     globalThis.updateDistances()
-  }
-}
+  
+})
+
 
 
 globalThis.updateDistances = () => {
@@ -76,9 +95,9 @@ globalThis.updateDistances = () => {
     if (state._selectedAttractions.includes(attraction.name)) {
       attraction.distance = 0
     } else {
-      let minDistance = calculateDistance(state.homeLocation, attraction.location)
+      let minDistance = globalThis.calculateDistance(state._homeLocation, attraction.location)
       itineraryAttractions.forEach(itineraryAttraction => {
-        const distanceToItinerary = calculateDistance(itineraryAttraction.location, attraction.location)
+        const distanceToItinerary = globalThis.calculateDistance(itineraryAttraction.location, attraction.location)
         if (distanceToItinerary < minDistance) {
           minDistance = distanceToItinerary
         }
@@ -87,7 +106,7 @@ globalThis.updateDistances = () => {
     }
   })
 }
-const calculateDistance = (point1, point2) => {
+globalThis.calculateDistance = (point1, point2) => {
   return google.maps.geometry.spherical.computeDistanceBetween(
     new google.maps.LatLng(point1),
     new google.maps.LatLng(point2)

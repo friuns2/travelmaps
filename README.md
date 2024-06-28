@@ -1,8 +1,8 @@
-# Travel Creator
+* Travel Creator
 
 Travel Creator is a web application that helps users discover and plan their travel itineraries. Built with Nuxt 3 and utilizing the Google Maps API, this app allows users to explore attractions, create custom itineraries, and visualize their travel plans on an interactive map.
 
-## Features
+** Features
 
 - Discover tourist attractions based on a selected location
 - Filter attractions by minimum rating count
@@ -12,15 +12,15 @@ Travel Creator is a web application that helps users discover and plan their tra
 - Calculate and display directions for your itinerary
 - Responsive design for both desktop and mobile devices
 
-## Getting Started
+** Getting Started
 
-### Prerequisites
+*** Prerequisites
 
 - Node.js (v14 or later)
 - npm (v6 or later)
 - Google Maps API key
 
-### Installation
+*** Installation
 
 1. Clone the repository:
    ```
@@ -45,7 +45,7 @@ Travel Creator is a web application that helps users discover and plan their tra
 
 5. Open your browser and navigate to `http://localhost:3000` to see the app in action.
 
-## Usage
+** Usage
 
 1. Click on the title to change the location.
 2. Use the slider to filter attractions by minimum rating count.
@@ -54,10 +54,10 @@ Travel Creator is a web application that helps users discover and plan their tra
 5. Toggle between list and map views on mobile devices.
 6. Use the "Show Itinerary" button to view your planned route.
 
-## Future Plans
+** Future Plans
 
 - Implement AI support to generate travel recommendations and itineraries based on user preferences and travel style.
 
-## Contributing
+** Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
