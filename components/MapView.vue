@@ -16,7 +16,7 @@ const initMap = globalThis.initMap = () => {
     directionsRenderer = new google.maps.DirectionsRenderer()
     globalThis.map = new google.maps.Map(document.getElementById('map'), {
         center: state._homeLocation || { lat: -8.3405, lng: 115.0920 },
-        zoom: 12,
+        zoom: 12,gestureHandling: "greedy"
     })
 
 
@@ -111,17 +111,20 @@ const updateAttractions = () => {
 
     service.nearbySearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            results.forEach(place => {
-                if (!state.attractions.some(a => a.name === place.name)) {
+            for (const place of results) {
+                if (!state.attractions.some(a => a.id === place.place_id)) {
                     service.getDetails({ placeId: place.place_id }, (details, status) => {
-                        if (status === google.maps.places.PlacesServiceStatus.OK && !state.attractions.some(a => a.name === place.name) ) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK) {
                             const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location) })
-                            state.attractions.push(attraction)
+                            if (!state.attractions.some(a => a.id === attraction.id)) {
+                                state.attractions.push(attraction)
+                            }
                             createMarker(attraction)
                         }
                     })
                 }
-            })
+            }//remove duplicates
+            
         }
     })
 }

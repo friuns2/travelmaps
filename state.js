@@ -27,11 +27,13 @@ let State = {
 /** @param {google.maps.places.PlaceResult} details */
 export const Attraction = (details,{distance}) => {
     return {
+        id: details.place_id,
         name: details.name,
         rating: details.rating,
         user_ratings_total: details.user_ratings_total,
         address: details.vicinity,
         photoUrl: details.photos ? details.photos[0].getUrl({ maxWidth: 500, maxHeight: 500 }) : '',
+        photos: details.photos,
         location: details.geometry.location,
         get inItinerary() {
             return getState()._selectedAttractions.includes(this.name);

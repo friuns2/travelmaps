@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-base-100 text-base-content p-4 md:p-8 overflow-hidden">
+  <div class="min-h-screen bg-base-100 text-base-content p-4 md:p-8">
     <h1 @click="toggleModal" class="text-4xl md:text-5xl font-bold mb-6 text-center animate-fade-in-down cursor-pointer">Bali Explorer</h1>
     <LocationModal />
    
