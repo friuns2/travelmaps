@@ -14,15 +14,18 @@
   "dependencies": {
     "@nuxt/scripts": "^0.5.1",
     "@nuxtjs/tailwindcss": "^6.12.0",
+    "ajv": "^8.16.0",
     "nuxt": "^3.12.2",
+    "qs": "^6.12.1",
     "tailwind": "^4.0.0",
     "vue": "^3.4.29",
-    "vue-router": "^4.3.3"
+    "vue-router": "^4.3.3",
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240620.0",
     "@types/google.maps": "^3.55.10",
-    "daisyui": "^4.12.6",
+    "daisyui": "^4.12.10",
     "nitro-cloudflare-dev": "^0.1.4",
     "wrangler": "^3.61.0"
   }
