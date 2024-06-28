@@ -40,7 +40,7 @@ defineProps({
 
 const focusAttraction = (attraction) => {
     state.activeView = 'map'
-    state.map.panTo(attraction.location)
+    globalThis.map.panTo(attraction.location)
 }
 
 const toggleAttractionInItinerary = (attraction) => {
@@ -50,7 +50,7 @@ const toggleAttractionInItinerary = (attraction) => {
     } else {
         state._selectedAttractions.splice(index, 1)
     }
-    state.map.panTo(attraction.location)
+    globalThis.map.panTo(attraction.location)
     const marker = state.markers.find(marker => marker.getPosition().equals(attraction.location))
     marker.setIcon({
         path: google.maps.SymbolPath.CIRCLE,

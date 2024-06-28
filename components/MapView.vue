@@ -9,25 +9,42 @@ let state = getState();
 let directionsService;
 /** @type {google.maps.DirectionsRenderer} */
 let directionsRenderer;
-
+/** @type {google.maps.Map} */
+globalThis.map;
 const initMap = globalThis.initMap = () => {
     directionsService = new google.maps.DirectionsService()
     directionsRenderer = new google.maps.DirectionsRenderer()
-    state.map = new google.maps.Map(document.getElementById('map'), {
-        center: state._homeLocation,
+    globalThis.map = new google.maps.Map(document.getElementById('map'), {
+        center: state._homeLocation || { lat: -8.3405, lng: 115.0920 },
         zoom: 12,
     })
 
 
-    directionsRenderer.setMap(state.map)
+    directionsRenderer.setMap(globalThis.map)
 
-    state.map.addListener('idle', () => {
+    globalThis.map.addListener('idle', () => {
         updateAttractions()
     })
     watch(() => state._placeType, () => {
         globalThis.clearMarkers()
         updateAttractions()
     })
+    
+    if (!state._homeLocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => globalThis.updateLocation({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            }),
+            () => fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => globalThis.updateLocation({
+                    lat: data.latitude,
+                    lng: data.longitude
+                }, data.city))
+                .catch(() => alert('Unable to get location. Please enter manually.'))
+        );
+    }
 
     const homeIcon = {
         url: 'https://maps.google.com/mapfiles/kml/shapes/homegardenbusiness.png',
@@ -38,7 +55,7 @@ const initMap = globalThis.initMap = () => {
 
     new google.maps.Marker({
         position: state._homeLocation,
-        map: state.map,
+        map: globalThis.map,
         icon: homeIcon,
         title: 'Bali'
     })
@@ -77,8 +94,8 @@ globalThis.calculateDirections = () => {
 }
 
 const updateAttractions = () => {
-    const bounds = state.map.getBounds()
-    const service = new google.maps.places.PlacesService(state.map)
+    const bounds = globalThis.map.getBounds()
+    const service = new google.maps.places.PlacesService(globalThis.map)
 
     let request = {
         bounds: bounds,
@@ -97,7 +114,7 @@ const updateAttractions = () => {
             results.forEach(place => {
                 if (!state.attractions.some(a => a.name === place.name)) {
                     service.getDetails({ placeId: place.place_id }, (details, status) => {
-                        if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && !state.attractions.some(a => a.name === place.name) ) {
                             const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location) })
                             state.attractions.push(attraction)
                             createMarker(attraction)
@@ -112,7 +129,7 @@ const updateAttractions = () => {
 
 const createMarker = (attraction) => {
     const marker = new google.maps.Marker({
-        map: state.map,
+        map: globalThis.map,
         position: attraction.location,
         title: attraction.name,
         animation: google.maps.Animation.DROP,
@@ -133,7 +150,7 @@ const createMarker = (attraction) => {
 }
 
 const focusAttraction = (attraction) => {
-    state.map.panTo(attraction.location)
+    globalThis.map.panTo(attraction.location)
 }
 
 onMounted(() => {
