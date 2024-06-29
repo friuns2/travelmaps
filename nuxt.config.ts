@@ -24,8 +24,9 @@ export default defineNuxtConfig({
         }
       ],
       script: [
-      // {src: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`,async: true, defer: true},        
-        { src: 'maps.js', defer: false }, {
+        {src: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`,async: true, defer: true},        
+        //{ src: 'maps.js', defer: false },
+        {
           src: 'https://www.googletagmanager.com/gtag/js?id=G-WT3VZNT7E6',
           async: true
         },

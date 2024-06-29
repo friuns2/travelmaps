@@ -98,7 +98,7 @@ globalThis.calculateDirections = async () => {
     }
 
     const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
-    if (itineraryAttractions.length === 0) return
+    if (itineraryAttractions.length<1) return
 
     const origin = state._homeLocation
     const destination = itineraryAttractions[itineraryAttractions.length - 1].location

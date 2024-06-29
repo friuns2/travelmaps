@@ -75,9 +75,7 @@ const toggleAttractionInItinerary = (attraction) => {
     globalThis.updateDistances()
     if (!state._selectedAttractions.includes(attraction.id))
         globalThis.calculateDirections()
-    if (state._selectedAttractions.length === 0) {
-        state.activeView = 'map'
-    }
+   
     window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
