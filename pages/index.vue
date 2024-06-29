@@ -30,6 +30,7 @@ import { getState } from '../state.js'
 import AttractionList from '../components/AttractionList.vue'
 import MapView from '../components/MapView.vue'
 import LocationModal from '../components/LocationModal.vue'
+import { calculateDirections } from '../utils.js'
 
 const state = getState()
 
@@ -40,7 +41,7 @@ const toggleModal = () => {
 const ActiveView = (view) => {
     state.activeView = view
     if (view === 'map') {
-        globalThis.calculateDirections()
+        calculateDirections()
     }
 }
 </script>
