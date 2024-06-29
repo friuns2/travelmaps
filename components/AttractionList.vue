@@ -45,11 +45,11 @@ const openInGoogleMaps = () => {
     const baseUrl = 'https://www.google.com/maps/dir/?api=1'
     const origin = `&origin=${state._homeLocation.lat},${state._homeLocation.lng}`
 
-    const lastAttraction = state.attractions.find(attraction => attraction.name === state._selectedAttractions[state._selectedAttractions.length - 1])
+    const lastAttraction = state.attractions.find(attraction => attraction.id === state._selectedAttractions[state._selectedAttractions.length - 1])
     const destination = lastAttraction ? `&destination=${lastAttraction.location.lat()},${lastAttraction.location.lng()}` : ''
 
-    const waypoints = state._selectedAttractions.slice(0, -1).map(name => {
-        const attraction = state.attractions.find(attraction => attraction.name === name)
+    const waypoints = state._selectedAttractions.slice(0, -1).map(id => {
+        const attraction = state.attractions.find(attraction => attraction.id === id)
         if (attraction && attraction.location) {
             return `${attraction.location.lat()},${attraction.location.lng()}`
         }
@@ -62,7 +62,7 @@ const openInGoogleMaps = () => {
 const filteredAttractions = computed(() => {
     return state.attractions.filter(attraction => 
         attraction.user_ratings_total >= state._minRatingsCount && 
-        (state._selectedAttractions.includes(attraction.name) == state.showItinerary && (state.showItinerary || attraction.type === state._placeType))
+        (state._selectedAttractions.includes(attraction.id) == state.showItinerary && (state.showItinerary || attraction.type === state._placeType))
     )
 })
 
@@ -99,9 +99,9 @@ watch(() => [state.showItinerary, state._selectedAttractions.length], (newValue)
 
 
 globalThis.updateDistances = () => {
-    const itineraryAttractions = state.attractions.filter(a => state._selectedAttractions.includes(a.name))
+    const itineraryAttractions = state.attractions.filter(a => state._selectedAttractions.includes(a.id))
     for (const attraction of state.attractions) {
-        if (state._selectedAttractions.includes(attraction.name)) {
+        if (state._selectedAttractions.includes(attraction.id)) {
             // Get distance from directions data
             const leg = state.directionsResult?.routes[0]?.legs.find(leg =>
                 leg.end_location.lat() === attraction.location.lat() &&

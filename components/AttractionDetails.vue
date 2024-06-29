@@ -64,16 +64,16 @@ const focusAttraction = (attraction) => {
 }
 
 const toggleAttractionInItinerary = (attraction) => {
-    const index = state._selectedAttractions.indexOf(attraction.name)
+    const index = state._selectedAttractions.indexOf(attraction.id)
     if (index === -1) {
-        state._selectedAttractions.push(attraction.name)
+        state._selectedAttractions.push(attraction.id)
     } else {
         state._selectedAttractions.splice(index, 1)
     }
     globalThis.map.panTo(attraction.location)
     createMarker(attraction)
     globalThis.updateDistances()
-    if (!state._selectedAttractions.includes(attraction.name))
+    if (!state._selectedAttractions.includes(attraction.id))
         globalThis.calculateDirections()
     if (state._selectedAttractions.length === 0) {
         state.activeView = 'map'
