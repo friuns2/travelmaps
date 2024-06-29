@@ -18,6 +18,7 @@ let State = {
     markers: [],
     autocomplete: null,
     _selectedAttractions: [] ,
+    /** @type {'attraction' | 'food'} */
     _placeType: 'attraction',
     
 };
@@ -36,7 +37,7 @@ export const Attraction = (details,{distance,type}) => {
         photos: details.photos,
         location: details.geometry.location,
         get inItinerary() {
-            return getState()._selectedAttractions.includes(this.name);
+            return getState()._selectedAttractions.includes(this.id);
         },
         distance: distance,
         type: type
