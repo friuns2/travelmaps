@@ -36,9 +36,10 @@
     </div>
 </template>
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { getState } from '../state.js'
 import AttractionDetails from './AttractionDetails.vue'
+import { updateDistances, calculateDirections, calculateDistance } from '../utils.js'
 
 const state = getState()
 const openInGoogleMaps = () => {
@@ -91,14 +92,14 @@ const toggleItinerary = () => {
 }
 watch(() => [state.showItinerary, state._selectedAttractions.length], (newValue) => {
 
-    globalThis.calculateDirections()
-    globalThis.updateDistances()
+    calculateDirections()
+    updateDistances()
 
 })
 
 
 
-globalThis.updateDistances = () => {
+updateDistances = () => {
     const itineraryAttractions = state.attractions.filter(a => state._selectedAttractions.includes(a.name))
     for (const attraction of state.attractions) {
         if (state._selectedAttractions.includes(attraction.name)) {
@@ -110,9 +111,9 @@ globalThis.updateDistances = () => {
             if (leg)
                 attraction.distance = leg.distance.value / 1000;
         } else {
-            let minDistance = globalThis.calculateDistance(state._homeLocation, attraction.location)
+            let minDistance = calculateDistance(state._homeLocation, attraction.location)
             for (const itineraryAttraction of itineraryAttractions) {
-                const distanceToItinerary = globalThis.calculateDistance(itineraryAttraction.location, attraction.location)
+                const distanceToItinerary = calculateDistance(itineraryAttraction.location, attraction.location)
                 if (distanceToItinerary < minDistance) {
                     minDistance = distanceToItinerary
                 }
@@ -121,7 +122,7 @@ globalThis.updateDistances = () => {
         }
     }
 }
-globalThis.calculateDistance = (point1, point2) => {
+calculateDistance = (point1, point2) => {
     return google.maps.geometry.spherical.computeDistanceBetween(
         new google.maps.LatLng(point1),
         new google.maps.LatLng(point2)

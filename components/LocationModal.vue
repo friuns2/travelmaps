@@ -15,6 +15,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { getState } from '~/state'
+import { updateLocation } from '~/utils'
 
 const state = getState()
 const autocompleteInput = ref(null)
@@ -28,7 +29,7 @@ const setNewLocation = () => {
 
     if (place) {
         if (place && place.geometry) {
-            globalThis.updateLocation(place.geometry.location, place.name)
+            updateLocation(place.geometry.location, place.name)
         }
     } else {
         navigator.geolocation.getCurrentPosition(
@@ -37,39 +38,11 @@ const setNewLocation = () => {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 }
-                globalThis.updateLocation(location)
+                updateLocation(location)
             },
             () => alert('Unable to get location. Please enter manually.')
         )
     }
-}
-
-globalThis.updateLocation = (location, placeName = 'Current Location') => {
-    state._homeLocation = {
-        lat: typeof location.lat === 'function' ? location.lat() : location.lat,
-        lng: typeof location.lng === 'function' ? location.lng() : location.lng
-    }
-    globalThis.map.setCenter(location)
-    state._selectedAttractions = [];
-    globalThis.clearMarkers()
-    state._title = `${placeName}`
-    globalThis.placeHomeMarker();
-}
-globalThis.placeHomeMarker = () => {
-    const homeIcon = {
-        url: 'https://maps.google.com/mapfiles/kml/shapes/homegardenbusiness.png',
-        scaledSize: new google.maps.Size(40, 40),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(20, 40)
-    }
-    state.markers.push(
-    new google.maps.Marker({
-        position: state._homeLocation,
-        map: globalThis.map,
-        icon: homeIcon,
-            title: 'Home'
-        })
-    )
 }
 
 watch(() => state._title, (newValue) => {
@@ -86,7 +59,6 @@ setTimeout(() => {
             fields: ['place_id', 'geometry', 'name']
         }
     )
-    globalThis.calculateDirections();
 }, 1000);
 
 watch(() => state.showModal, (newValue) => {

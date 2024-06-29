@@ -41,6 +41,7 @@
 <script setup>
 import { getState } from '~/state'
 import { Attraction } from '~/state'
+import { createMarker, updateDistances, calculateDirections } from '~/utils'
 
 const state = getState()
 
@@ -72,32 +73,12 @@ const toggleAttractionInItinerary = (attraction) => {
     }
     globalThis.map.panTo(attraction.location)
     createMarker(attraction)
-    globalThis.updateDistances()
+    updateDistances()
     if (!state._selectedAttractions.includes(attraction.name))
-        globalThis.calculateDirections()
+        calculateDirections()
     if (state._selectedAttractions.length === 0) {
         state.activeView = 'map'
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-
-const createMarker = (attraction) => { 
-    const marker = new google.maps.Marker({
-        map: globalThis.map,
-        position: attraction.location,
-        title: attraction.name,
-        animation: google.maps.Animation.DROP,
-        icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: attraction.inItinerary ? '#4CAF50' : '#FFA500',
-            fillOpacity: 0.9,
-            strokeWeight: 0
-        }
-    })
-
-    state.markers.push(marker)
-    
 }
 </script>
