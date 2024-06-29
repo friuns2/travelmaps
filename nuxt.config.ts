@@ -16,7 +16,7 @@ export default defineNuxtConfig({
   ssr: false,
 
   app: {
-    head: {
+    head: { 
       meta: [        
         {
           name: 'description',
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         },
         {
           children: `
-        window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || []; 
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-WT3VZNT7E6');

@@ -8,7 +8,7 @@ let State = {
 
     /**  @type {Array<ReturnType<typeof Attraction>>} */
     attractions: [],
-    _minRatingsCount: 0,
+    _minRatingsCount: 10,
     activeView: 'map',
     showItinerary: false,
     _sortOrder: 'distance',
@@ -25,7 +25,7 @@ let State = {
 
 
 /** @param {google.maps.places.PlaceResult} details */
-export const Attraction = (details,{distance}) => {
+export const Attraction = (details,{distance,type}) => {
     return {
         id: details.place_id,
         name: details.name,
@@ -38,7 +38,8 @@ export const Attraction = (details,{distance}) => {
         get inItinerary() {
             return getState()._selectedAttractions.includes(this.name);
         },
-        distance: distance
+        distance: distance,
+        type: type
     }
 }
 

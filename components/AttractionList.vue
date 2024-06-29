@@ -1,27 +1,14 @@
 <template>
     <div>
         <div class="mb-4 flex justify-between items-center">
-            <div>
-                <label for="sortOrder" class="mr-2 text-white">Sort by:</label>
-                <select id="sortOrder" v-model="state._sortOrder" class="bg-white bg-opacity-20 rounded-lg px-2 py-1 text-white">
-                    <option value="relativity" class="text-black">Relativity</option>
-                    <option value="popularity" class="text-black">Popularity</option>
-                    <option value="distance" class="text-black">Distance</option>
-                </select>
-            </div>
+          
             <button v-if="hasItineraryItems" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
                 <i class="material-icons mr-2 text-xl">{{ state.showItinerary ? 'view_list' : 'directions' }}</i>
-                <span>{{ state.showItinerary ? `Show All (${filteredAttractions.length})` : `Show Itinerary (${state._selectedAttractions.length})` }}</span>
+                <span>{{ state.showItinerary ? `Show All (${state.attractions.length})` : `Show Itinerary (${state._selectedAttractions.length})` }}</span>
             </button>
         </div>
         <div v-if="!state.showItinerary" class="flex flex-wrap justify-between items-center mb-4">
-            <div class="flex-grow mx-4 mb-4">
-                <label for="placeType" class="block text-sm font-medium mb-1">Place Type:</label>
-                <select id="placeType" v-model="state._placeType" class="select select-primary w-full max-w-xs">
-                    <option value="attraction">Attractions</option>
-                    <option value="food">Restaurants</option>
-                </select>
-            </div>
+          
             <div class="flex-grow mx-4">
                 <label for="minRatingsCount" class="block text-sm font-medium mb-1">Minimum Ratings Count:</label>
                 <div class="flex items-center space-x-2">
@@ -30,6 +17,8 @@
                 </div>
             </div>
         </div>
+        
+    
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="attraction-grid">
             <TransitionGroup name="attraction-list">
                 <AttractionDetails
@@ -41,7 +30,7 @@
         <div class="mt-4 flex justify-end">
             <button v-if="hasItineraryItems" @click="openInGoogleMaps" class="btn btn-secondary btn-sm text-white">
                 <i class="material-icons mr-2 text-xl">map</i>
-                <span>Open in Google Maps</span>
+                <span>Open Route in Google Maps</span>
             </button>
         </div>
     </div>
@@ -71,14 +60,12 @@ const openInGoogleMaps = () => {
     window.open(url, '_blank')
 }
 const filteredAttractions = computed(() => {
-    return state.attractions.filter(attraction => attraction.user_ratings_total >= state._minRatingsCount)
+    return state.attractions.filter(attraction => 
+        attraction.user_ratings_total >= state._minRatingsCount && 
+        (state._selectedAttractions.includes(attraction.name) == state.showItinerary && (state.showItinerary || attraction.type === state._placeType))
+    )
 })
 
-const displayedAttractions = computed(() =>
-    filteredAttractions.value.filter(attraction =>
-        state.showItinerary === state._selectedAttractions.includes(attraction.name)
-    )
-)
 
 const hasItineraryItems = computed(() => {
     return state._selectedAttractions.length > 0
@@ -89,7 +76,7 @@ watch(hasItineraryItems, () => {
         state.showItinerary = false
 })
 const sortedAttractions = computed(() => {
-    return [...displayedAttractions.value].sort((a, b) => {
+    return [...filteredAttractions.value].sort((a, b) => {
         if (state._sortOrder === 'relativity') {
             return 0
         } else if (state._sortOrder === 'popularity') {

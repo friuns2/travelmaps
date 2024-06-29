@@ -26,7 +26,7 @@ const initMap = globalThis.initMap = () => {
         updateAttractions()
     })
     watch(() => state._placeType, () => {
-        globalThis.clearMarkers()
+        
         updateAttractions()
     })
     
@@ -44,29 +44,23 @@ const initMap = globalThis.initMap = () => {
                 }, data.city))
                 .catch(() => alert('Unable to get location. Please enter manually.'))
         );
+    }else{
+        globalThis.placeHomeMarker();
     }
 
-    const homeIcon = {
-        url: 'https://maps.google.com/mapfiles/kml/shapes/homegardenbusiness.png',
-        scaledSize: new google.maps.Size(40, 40),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(20, 40)
-    }
 
-    new google.maps.Marker({
-        position: state._homeLocation,
-        map: globalThis.map,
-        icon: homeIcon,
-        title: 'Bali'
-    })
 }
 
 globalThis.clearMarkers = () => {
-  state.markers.forEach(marker => marker.setMap(null))
+  state.markers.forEach(marker => {
+    marker.setVisible(false)
+    marker.setMap(null)
+  })
   state.markers = []
   state.attractions = []
   directionsRenderer.setDirections({ routes: [] })
-  state.showItinerary = false;
+  state.showItinerary = false
+  
 }
 
 globalThis.calculateDirections = () => {
@@ -115,11 +109,11 @@ const updateAttractions = () => {
                 if (!state.attractions.some(a => a.id === place.place_id)) {
                     service.getDetails({ placeId: place.place_id }, (details, status) => {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
-                            const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location) })
+                            const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location),type: state._placeType })
                             if (!state.attractions.some(a => a.id === attraction.id)) {
                                 state.attractions.push(attraction)
                             }
-                            createMarker(attraction)
+                            
                         }
                     })
                 }
@@ -130,27 +124,6 @@ const updateAttractions = () => {
 }
 
 
-const createMarker = (attraction) => {
-    const marker = new google.maps.Marker({
-        map: globalThis.map,
-        position: attraction.location,
-        title: attraction.name,
-        animation: google.maps.Animation.DROP,
-        icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: attraction.inItinerary ? '#4CAF50' : '#FFA500',
-            fillOpacity: 0.9,
-            strokeWeight: 0
-        }
-    })
-
-    state.markers.push(marker)
-
-    marker.addListener('click', function () {
-        focusAttraction(attraction)
-    })
-}
 
 const focusAttraction = (attraction) => {
     globalThis.map.panTo(attraction.location)
