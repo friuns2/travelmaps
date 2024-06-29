@@ -1,19 +1,31 @@
 <template>
     <div>
         <div class="mb-4 flex justify-between items-center">
-          
+            <div class="flex-grow mx-4">
+                <label for="placeType" class="block text-sm font-medium mb-1">Place Type:</label>
+                <select id="placeType" v-model="state._placeType" class="select select-primary w-full max-w-xs">
+                    <option value="attraction">Attractions</option>
+                    <option value="food">Restaurants</option>
+                </select>
+            </div>
             <button v-if="hasItineraryItems" @click="toggleItinerary" class="btn btn-primary btn-sm text-white glass">
                 <i class="material-icons mr-2 text-xl">{{ state.showItinerary ? 'view_list' : 'directions' }}</i>
                 <span>{{ state.showItinerary ? `Show All (${state.attractions.length})` : `Show Itinerary (${state._selectedAttractions.length})` }}</span>
             </button>
         </div>
         <div v-if="!state.showItinerary" class="flex flex-wrap justify-between items-center mb-4">
-          
             <div class="flex-grow mx-4">
                 <label for="minRatingsCount" class="block text-sm font-medium mb-1">Minimum Ratings Count:</label>
                 <div class="flex items-center space-x-2">
                     <input type="range" id="minRatingsCount" min="0" max="1000" v-model="state._minRatingsCount" class="range range-sm range-primary flex-grow" />
                     <span class="badge badge-primary badge-outline min-w-[3rem] text-center">{{ state._minRatingsCount }}</span>
+                </div>
+            </div>
+            <div class="flex-grow mx-4">
+                <label for="minStars" class="block text-sm font-medium mb-1">Minimum Stars:</label>
+                <div class="flex items-center space-x-2">
+                    <input type="range" id="minStars" min="1" max="5" step="0.1" v-model="state._minStars" class="range range-sm range-primary flex-grow" />
+                    <span class="badge badge-primary badge-outline min-w-[3rem] text-center">{{ Number(state._minStars).toFixed(1) }}</span>
                 </div>
             </div>
         </div>
@@ -60,10 +72,18 @@ const openInGoogleMaps = () => {
     window.open(url, '_blank')
 }
 const filteredAttractions = computed(() => {
-    return state.attractions.filter(attraction => 
-        attraction.user_ratings_total >= state._minRatingsCount && 
-        (state._selectedAttractions.includes(attraction.id) == state.showItinerary && (state.showItinerary || attraction.type === state._placeType))
-    )
+    return state.attractions.filter(attraction => {
+        const isInItinerary = state._selectedAttractions.includes(attraction.id);
+        const meetsRatingCriteria = attraction.user_ratings_total >= Number(state._minRatingsCount) && 
+                                    attraction.rating >= Number(state._minStars);
+        const matchesPlaceType = attraction.type === state._placeType;
+
+        if (state.showItinerary) {
+            return isInItinerary;
+        } else {
+            return meetsRatingCriteria && matchesPlaceType && !isInItinerary;
+        }
+    });
 })
 
 

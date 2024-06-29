@@ -13,6 +13,14 @@ let directionsRenderer;
 let service;
 /** @type {google.maps.Map} */
 globalThis.map;
+onMounted(() => {
+    if (window.google) {
+        nextTick(() => {
+            initMap()
+        })
+    }
+})
+
 const initMap = globalThis.initMap = () => {
     directionsService = new google.maps.DirectionsService()
     directionsRenderer = new google.maps.DirectionsRenderer()
@@ -28,9 +36,7 @@ const initMap = globalThis.initMap = () => {
     globalThis.map.addListener('idle', () => {
         updateAttractions()
     })
-    watch(() => state._placeType, () => {
-        updateAttractions()
-    })
+ 
     
     if (!state._homeLocation) {
         navigator.geolocation.getCurrentPosition(
@@ -48,10 +54,16 @@ const initMap = globalThis.initMap = () => {
         );
     }else{
         globalThis.placeHomeMarker();
+        setTimeout(() => {
+            globalThis.calculateDirections();
+        }, 500); // Add a 1-second delay
     }
 
 
 }
+watch(() => state._placeType, () => {
+    updateAttractions()
+})
 
 globalThis.clearMarkers = () => {
   state.markers.forEach(marker => {
@@ -64,24 +76,27 @@ globalThis.clearMarkers = () => {
   state.showItinerary = false
   
 }
-watch(() => state.showItinerary, async () => {
-    for (const id of  state._selectedAttractions) {
+//watch(() => state.showItinerary, async () => {globalThis.calculateDirections()})
+
+
+globalThis.calculateDirections = async () => {
+    for (const id of state._selectedAttractions) {
         const attraction = state.attractions.find(attraction => attraction.id === id)
         if (!attraction && service) {
-            // Fetch attraction details from places service
-            service.getDetails({ placeId: id }, (details, status) => {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    const attractionType = details.types.includes('restaurant') ? 'food' : 'attraction'
-                    const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location), type: attractionType });
-                    state.attractions.push(attraction);
-                }
-            })
+            const details = await new Promise((resolve, reject) => {
+                service.getDetails({ placeId: id }, (details, status) => {
+                    status === google.maps.places.PlacesServiceStatus.OK ? resolve(details) : reject(status);
+                });
+            });
+
+            const attractionType = details.types.includes('restaurant') ? 'food' : 'attraction'
+            state.attractions.push(Attraction(details, {
+                distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location),
+                type: attractionType
+            }));
         }
     }
-})
 
-
-globalThis.calculateDirections = () => {
     const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
     if (itineraryAttractions.length === 0) return
 
@@ -107,7 +122,7 @@ globalThis.calculateDirections = () => {
 
 const updateAttractions = () => {
     const bounds = globalThis.map.getBounds()
-
+    if(!bounds)return;
     let request = {
         bounds: bounds,
     }
@@ -145,12 +160,6 @@ const updateAttractions = () => {
 const focusAttraction = (attraction) => {
     globalThis.map.panTo(attraction.location)
 }
-
-onMounted(() => {
-    if (window.google) {
-        initMap()
-    }
-})
 
 
 </script>

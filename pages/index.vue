@@ -13,13 +13,7 @@
                 <AttractionList />
             </div>
             <div :class="{ 'hidden md:block': state.activeView === 'list' }" class="md:w-1/2 md:pl-4">
-                <div class="flex-grow mx-4 mb-4">
-                    <label for="placeType" class="block text-sm font-medium mb-1">Place Type:</label>
-                    <select id="placeType" v-model="state._placeType" class="select select-primary w-full max-w-xs">
-                        <option value="attraction">Attractions</option>
-                        <option value="food">Restaurants</option>
-                    </select>
-                </div>
+                
                 <MapView />
             </div>
         </div>
@@ -30,7 +24,7 @@ import { getState } from '../state.js'
 import AttractionList from '../components/AttractionList.vue'
 import MapView from '../components/MapView.vue'
 import LocationModal from '../components/LocationModal.vue'
-
+console.log("index loaded")
 const state = getState()
 
 const toggleModal = () => {

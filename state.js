@@ -14,6 +14,7 @@ let State = {
     _sortOrder: 'distance',
     _homeLocation:undefined,
     _title: '',
+    _minStars: 4.5,
     showModal: false,
     markers: [],
     autocomplete: null,
