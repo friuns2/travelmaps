@@ -12,20 +12,20 @@ let directionsRenderer;
 /** @type {google.maps.places.PlacesService} */
 let service;
 /** @type {google.maps.Map} */
-globalThis.map;
-const initMap = globalThis.initMap = () => {
+let map;
+const initMap = () => {
     directionsService = new google.maps.DirectionsService()
     directionsRenderer = new google.maps.DirectionsRenderer()
-    globalThis.map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
         center: state._homeLocation || { lat: -8.3405, lng: 115.0920 },
         zoom: 12,gestureHandling: "greedy"
     })
-    service = new google.maps.places.PlacesService(globalThis.map)
+    service = new google.maps.places.PlacesService(map)
 
 
-    directionsRenderer.setMap(globalThis.map)
+    directionsRenderer.setMap(map)
 
-    globalThis.map.addListener('idle', () => {
+    map.addListener('idle', () => {
         updateAttractions()
     })
     watch(() => state._placeType, () => {
@@ -34,26 +34,26 @@ const initMap = globalThis.initMap = () => {
     
     if (!state._homeLocation) {
         navigator.geolocation.getCurrentPosition(
-            (position) => globalThis.updateLocation({
+            (position) => updateLocation({
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             }),
             () => fetch('https://ipapi.co/json/')
                 .then(response => response.json())
-                .then(data => globalThis.updateLocation({
+                .then(data => updateLocation({
                     lat: data.latitude,
                     lng: data.longitude
                 }, data.city))
                 .catch(() => alert('Unable to get location. Please enter manually.'))
         );
     }else{
-        globalThis.placeHomeMarker();
+        placeHomeMarker();
     }
 
 
 }
 
-globalThis.clearMarkers = () => {
+const clearMarkers = () => {
   state.markers.forEach(marker => {
     marker.setVisible(false)
     marker.setMap(null)
@@ -72,7 +72,7 @@ watch(() => state.showItinerary, async () => {
             service.getDetails({ placeId: id }, (details, status) => {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     const attractionType = details.types.includes('restaurant') ? 'food' : 'attraction'
-                    const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location), type: attractionType });
+                    const attraction = Attraction(details, { distance: calculateDistance(state._homeLocation, details.geometry.location), type: attractionType });
                     state.attractions.push(attraction);
                 }
             })
@@ -81,7 +81,7 @@ watch(() => state.showItinerary, async () => {
 })
 
 
-globalThis.calculateDirections = () => {
+const calculateDirections = () => {
     const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
     if (itineraryAttractions.length === 0) return
 
@@ -106,7 +106,7 @@ globalThis.calculateDirections = () => {
 }
 
 const updateAttractions = () => {
-    const bounds = globalThis.map.getBounds()
+    const bounds = map.getBounds()
 
     let request = {
         bounds: bounds,
@@ -126,7 +126,7 @@ const updateAttractions = () => {
                 if (!state.attractions.some(a => a.id === place.place_id)) {
                     service.getDetails({ placeId: place.place_id }, (details, status) => {
                         if (status === google.maps.places.PlacesServiceStatus.OK) {
-                            const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location),type: state._placeType })
+                            const attraction = Attraction(details, { distance: calculateDistance(state._homeLocation, details.geometry.location),type: state._placeType })
                             if (!state.attractions.some(a => a.id === attraction.id)) {
                                 state.attractions.push(attraction)
                             }
@@ -143,7 +143,7 @@ const updateAttractions = () => {
 
 
 const focusAttraction = (attraction) => {
-    globalThis.map.panTo(attraction.location)
+    map.panTo(attraction.location)
 }
 
 onMounted(() => {
