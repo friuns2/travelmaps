@@ -1,7 +1,6 @@
 
+
 https://github.com/friuns2/travelmaps/assets/16543239/af65de97-e367-4875-be79-b75df41c02b4
-
-
 
 # Travel Creator
 
@@ -20,15 +19,15 @@ Created with [GPTCall App Creator](https://app.gptcall.net/)
 - Calculate and display directions for your itinerary
 - Responsive design for both desktop and mobile devices
 
-## Getting Started
+** Getting Started
 
-### Prerequisites
+*** Prerequisites
 
 - Node.js (v14 or later)
 - npm (v6 or later)
 - Google Maps API key
 
-### Installation
+*** Installation
 
 1. Clone the repository:
    ```
@@ -53,7 +52,7 @@ Created with [GPTCall App Creator](https://app.gptcall.net/)
 
 5. Open your browser and navigate to `http://localhost:3000` to see the app in action.
 
-## Usage
+** Usage
 
 1. Click on the title to change the location.
 2. Use the slider to filter attractions by minimum rating count.
@@ -62,10 +61,10 @@ Created with [GPTCall App Creator](https://app.gptcall.net/)
 5. Toggle between list and map views on mobile devices.
 6. Use the "Show Itinerary" button to view your planned route.
 
-## Future Plans
+** Future Plans
 
 - Implement AI support to generate travel recommendations and itineraries based on user preferences and travel style.
 
-## Contributing
+** Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

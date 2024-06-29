@@ -5,8 +5,17 @@
     "types": [
       "@cloudflare/workers-types/2023-07-01","google.maps"
     ],
-    "strict": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node"
-  }
+    "strict": false
+  }, 
+  "include": [
+    ".nuxt/types/server",
+    "server/**/*",
+    "utils/**/*",
+    "pages/**/*",
+    "state.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
+ 
