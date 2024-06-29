@@ -67,6 +67,7 @@ const filteredAttractions = computed(() => {
 })
 
 
+
 const hasItineraryItems = computed(() => {
     return state._selectedAttractions.length > 0
 })

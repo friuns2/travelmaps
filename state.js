@@ -18,6 +18,7 @@ let State = {
     markers: [],
     autocomplete: null,
     _selectedAttractions: [] ,
+    /** @type {'attraction' | 'food'} */
     _placeType: 'attraction',
     
 };

@@ -9,6 +9,8 @@ let state = getState();
 let directionsService;
 /** @type {google.maps.DirectionsRenderer} */
 let directionsRenderer;
+/** @type {google.maps.places.PlacesService} */
+let service;
 /** @type {google.maps.Map} */
 globalThis.map;
 const initMap = globalThis.initMap = () => {
@@ -18,6 +20,7 @@ const initMap = globalThis.initMap = () => {
         center: state._homeLocation || { lat: -8.3405, lng: 115.0920 },
         zoom: 12,gestureHandling: "greedy"
     })
+    service = new google.maps.places.PlacesService(globalThis.map)
 
 
     directionsRenderer.setMap(globalThis.map)
@@ -26,7 +29,6 @@ const initMap = globalThis.initMap = () => {
         updateAttractions()
     })
     watch(() => state._placeType, () => {
-        
         updateAttractions()
     })
     
@@ -62,6 +64,22 @@ globalThis.clearMarkers = () => {
   state.showItinerary = false
   
 }
+watch(() => state.showItinerary, async () => {
+    for (const id of  state._selectedAttractions) {
+        const attraction = state.attractions.find(attraction => attraction.id === id)
+        if (!attraction && service) {
+            // Fetch attraction details from places service
+            service.getDetails({ placeId: id }, (details, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    const attractionType = details.types.includes('restaurant') ? 'food' : 'attraction'
+                    const attraction = Attraction(details, { distance: globalThis.calculateDistance(state._homeLocation, details.geometry.location), type: attractionType });
+                    state.attractions.push(attraction);
+                }
+            })
+        }
+    }
+})
+
 
 globalThis.calculateDirections = () => {
     const itineraryAttractions = state.attractions.filter(a => a.inItinerary)
@@ -89,14 +107,13 @@ globalThis.calculateDirections = () => {
 
 const updateAttractions = () => {
     const bounds = globalThis.map.getBounds()
-    const service = new google.maps.places.PlacesService(globalThis.map)
 
     let request = {
         bounds: bounds,
     }
 
     if (state._placeType === 'food') {
-        request.type = undefined
+        request.type = ['restaurant']
         request.keyword = ['restaurant']
     } else {
         request.type = ['tourist_attraction']
