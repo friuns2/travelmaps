@@ -58,4 +58,3 @@ export const getState = () => {
     }
     return globalThis.state;
 }
-

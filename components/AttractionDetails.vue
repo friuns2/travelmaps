@@ -59,7 +59,7 @@ const openInGoogleMaps = (attraction) => {
 }
 const focusAttraction = (attraction) => {
     //state.activeView = 'map'
-  //  globalThis.map.panTo(attraction.location)
+    map.panTo(attraction.location)
    // globalThis.map.setZoom(15)
 }
 
@@ -70,11 +70,11 @@ const toggleAttractionInItinerary = (attraction) => {
     } else {
         state._selectedAttractions.splice(index, 1)
     }
-    globalThis.map.panTo(attraction.location)
+    map.panTo(attraction.location)
     createMarker(attraction)
-    globalThis.updateDistances()
+    updateDistances()
     if (!state._selectedAttractions.includes(attraction.id))
-        globalThis.calculateDirections()
+        calculateDirections()
     if (state._selectedAttractions.length === 0) {
         state.activeView = 'map'
     }
@@ -84,7 +84,7 @@ const toggleAttractionInItinerary = (attraction) => {
 
 const createMarker = (attraction) => { 
     const marker = new google.maps.Marker({
-        map: globalThis.map,
+        map: map,
         position: attraction.location,
         title: attraction.name,
         animation: google.maps.Animation.DROP,

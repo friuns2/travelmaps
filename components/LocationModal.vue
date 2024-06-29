@@ -28,7 +28,7 @@ const setNewLocation = () => {
 
     if (place) {
         if (place && place.geometry) {
-            globalThis.updateLocation(place.geometry.location, place.name)
+            updateLocation(place.geometry.location, place.name)
         }
     } else {
         navigator.geolocation.getCurrentPosition(
@@ -37,7 +37,7 @@ const setNewLocation = () => {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 }
-                globalThis.updateLocation(location)
+                updateLocation(location)
             },
             () => alert('Unable to get location. Please enter manually.')
         )
